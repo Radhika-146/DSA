@@ -20,53 +20,49 @@ Use array and front/rear pointers. Enqueue inserts at rear, dequeue removes from
 
 code:
 
-#include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 
 #define MAX 100
 
-typedef struct {
-    int s1[MAX];
-    int s2[MAX];
-    int top1;
-    int top2;
-} MyQueue;
+int s1[MAX], s2[MAX];
+int top1 = -1, top2 = -1;
 
-MyQueue* myQueueCreate() {
-    MyQueue* obj = (MyQueue*)malloc(sizeof(MyQueue));
-    obj->top1 = -1;
-    obj->top2 = -1;
-    return obj;
+void push(int x) {
+    s1[++top1] = x;
 }
 
-void myQueuePush(MyQueue* obj, int x) {
-    obj->s1[++obj->top1] = x;
-}
-
-void transfer(MyQueue* obj) {
-    while (obj->top1 != -1) {
-        obj->s2[++obj->top2] = obj->s1[obj->top1--];
+void transfer() {
+    while (top1 != -1) {
+        s2[++top2] = s1[top1--];
     }
 }
 
-int myQueuePop(MyQueue* obj) {
-    if (obj->top2 == -1) {
-        transfer(obj);
+int pop() {
+    if (top2 == -1) {
+        transfer();
     }
-    return obj->s2[obj->top2--];
+    return s2[top2--];
 }
 
-int myQueuePeek(MyQueue* obj) {
-    if (obj->top2 == -1) {
-        transfer(obj);
+int peek() {
+    if (top2 == -1) {
+        transfer();
     }
-    return obj->s2[obj->top2];
+    return s2[top2];
 }
 
-bool myQueueEmpty(MyQueue* obj) {
-    return (obj->top1 == -1 && obj->top2 == -1);
+bool empty() {
+    return (top1 == -1 && top2 == -1);
 }
 
-void myQueueFree(MyQueue* obj) {
-    free(obj);
+int main() {
+    push(1);
+    push(2);
+
+    printf("%d\n", peek());   // 1
+    printf("%d\n", pop());    // 1
+    printf("%s\n", empty() ? "true" : "false");
+
+    return 0;
 }
