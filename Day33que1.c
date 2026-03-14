@@ -1,69 +1,95 @@
-/*Problem: Convert an infix expression to postfix notation using stack.
+/*Problem: Circular Queue Using Array - Implement using linked list with dynamic memory allocation.
 
 Input:
-- Single line: infix expression (operands are single characters)
+- First line: integer n (number of elements to enqueue)
+- Second line: n space-separated integers
+- Third line: integer m (number of dequeue operations)
 
 Output:
-- Print the postfix expression
+- Print queue elements from front to rear after operations, space-separated
 
 Example:
 Input:
-A+B*C
+5
+10 20 30 40 50
+2
 
 Output:
-ABC*+
+30 40 50 10 20
 
 Explanation:
-Operator precedence: * > +
-Use stack to handle operator precedence and associativity*/
+Use array and front/rear pointers. Rear wraps around to start after reaching array end. Dequeue removes elements from front. Display remaining elements in correct order.*/
 
 code:
 
-```c id="y2k8fd">
 #include <stdio.h>
-#include <ctype.h>
-#include <string.h>
 
-char stack[100];
-int top=-1;
+#define MAX 100
 
-void push(char x){
-    stack[++top]=x;
-}
+int queue[MAX];
+int front = -1, rear = -1;
 
-char pop(){
-    return stack[top--];
-}
-
-int prec(char x){
-    if(x=='+'||x=='-') return 1;
-    if(x=='*'||x=='/') return 2;
-    if(x=='^') return 3;
-    return 0;
-}
-
-int main(){
-    char infix[100];
-    scanf("%s",infix);
-    int i;
-    for(i=0;i<strlen(infix);i++){
-        char c=infix[i];
-        if(isalnum(c)){
-            printf("%c",c);
-        }else if(c=='('){
-            push(c);
-        }else if(c==')'){
-            while(top!=-1 && stack[top]!='(')
-                printf("%c",pop());
-            pop();
-        }else{
-            while(top!=-1 && prec(stack[top])>=prec(c))
-                printf("%c",pop());
-            push(c);
-        }
+// Enqueue operation
+void enqueue(int value) {
+    if ((rear + 1) % MAX == front) {
+        printf("Queue Overflow\n");
+        return;
     }
-    while(top!=-1)
-        printf("%c",pop());
-    return 0;
+
+    if (front == -1) // first element
+        front = 0;
+
+    rear = (rear + 1) % MAX;
+    queue[rear] = value;
 }
 
+// Dequeue operation
+void dequeue() {
+    if (front == -1) {
+        printf("Queue Underflow\n");
+        return;
+    }
+
+    if (front == rear) { // only one element
+        front = rear = -1;
+    } else {
+        front = (front + 1) % MAX;
+    }
+}
+
+// Display queue
+void display() {
+    if (front == -1) {
+        printf("Queue is empty\n");
+        return;
+    }
+
+    int i = front;
+    while (1) {
+        printf("%d ", queue[i]);
+        if (i == rear)
+            break;
+        i = (i + 1) % MAX;
+    }
+}
+
+int main() {
+    int n, m, x;
+
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &x);
+        enqueue(x);
+    }
+
+    scanf("%d", &m);
+
+    for (int i = 0; i < m; i++) {
+        dequeue();
+    }
+
+    display();
+
+    return 0;
+}
